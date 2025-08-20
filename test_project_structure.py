@@ -19,7 +19,7 @@ class ProjectStructureTests(unittest.TestCase):
         self.assertIn('editor = Agent(', agents_py)
 
     def test_crew_file_references(self):
-        crew_py = (ROOT / 'Crew.py').read_text(encoding='utf-8')
+        crew_py = (ROOT / 'Article_Writer_Crew.py').read_text(encoding='utf-8')
         # Ensure Crew is instantiated and kickoff is called in main guard
         self.assertIn('crew = Crew(', crew_py)
         self.assertIn("if __name__ == \"__main__\":", crew_py)
