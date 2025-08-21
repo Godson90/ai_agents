@@ -1,59 +1,60 @@
+# Agents.py
+from __future__ import annotations
 import os
-import warnings
+from typing import Optional
 from crewai import Agent, LLM
-warnings.filterwarnings("ignore")
+class Agents:
+    """Factory that builds shared LLM and returns role-specific Agents."""
+    def __init__(
+        self,
+        model: str = None,
+        temperature: float = 0.5,
+        api_key: Optional[str] = None,
+    ):
+        # If gpt-4.1 isn’t available in your account, swap to "gpt-4o-mini".
+        self.llm = LLM(
+            model=model or os.getenv("OPENAI_MODEL", "gpt-4.1"),
+            temperature=temperature,
+            api_key=api_key or os.getenv("OPENAI_API_KEY"),
+        )
 
-llm= LLM(model= "gpt-4.1", temperature=0.5,
-          api_key=os.getenv("OPENAI_API_KEY"))
+    def planner(self) -> Agent:
+        return Agent(
+            role="Content Planner",
+            goal="Plan engaging and factually accurate content on {topic}.",
+            backstory=(
+                "You’re planning a blog article about {topic}. "
+                "You gather trustworthy info, outline key sections, and surface data/sources "
+                "so the audience can learn and make informed decisions. "
+                "Your output guides the Content Writer."
+            ),
+            allow_delegation=False,
+            verbose=False,
+            llm=self.llm,
+        )
 
-planner = Agent(
-    role="Content Planner",
-    goal="Plan engaging and factually accurate content on {topic}",
-    backstory="You're working on planning a blog article "
-              "about the topic: {topic}."
-              "You collect information that helps the "
-              "audience learn something "
-              "and make informed decisions. "
-              "Your work is the basis for "
-              "the Content Writer to write an article on this topic.",
-	verbose=False,
-    llm=llm
-)
+    def writer(self) -> Agent:
+        return Agent(
+            role="Content Writer",
+            goal="Write a clear, insightful article on {topic} using the planner’s outline.",
+            backstory=(
+                "You transform the planner’s outline and sources into a readable, SEO-friendly draft. "
+                "You clearly separate opinion from fact and cite supporting info when relevant."
+            ),
+            allow_delegation=False,
+            verbose=False,
+            llm=self.llm,
+        )
 
-writer_agent = Agent(
-    role="Content Writer",
-    goal="Write insightful and factually accurate "
-         "opinion piece about the topic: {topic}",
-    backstory="You're working on a writing "
-              "a new opinion piece about the topic: {topic}. "
-              "You base your writing on the work of "
-              "the Content Planner, who provides an outline "
-              "and relevant context about the topic. "
-              "You follow the main objectives and "
-              "direction of the outline, "
-              "as provide by the Content Planner. "
-              "You also provide objective and impartial insights "
-              "and back them up with information "
-              "provide by the Content Planner. "
-              "You acknowledge in your opinion piece "
-              "when your statements are opinions "
-              "as opposed to objective statements.",
-    verbose=False,
-    llm=llm
-)
-
-editor_agent = Agent(
-    role="Editor",
-    goal="Edit a given blog post to align with "
-         "the writing style of the organization. ",
-    backstory="You are an editor who receives a blog post "
-              "from the Content Writer. "
-              "Your goal is to review the blog post "
-              "to ensure that it follows journalistic best practices,"
-              "provides balanced viewpoints "
-              "when providing opinions or assertions, "
-              "and also avoids major controversial topics "
-              "or opinions when possible.",
-    verbose=False,
-    llm=llm
-)
+    def editor(self) -> Agent:
+        return Agent(
+            role="Editor",
+            goal="Polish the draft for accuracy, clarity, tone, and style.",
+            backstory=(
+                "You fact-check, improve flow, ensure balanced viewpoints, and align with brand voice. "
+                "You remove ambiguity and fix grammar and structure."
+            ),
+            allow_delegation=False,
+            verbose=False,
+            llm=self.llm,
+        )

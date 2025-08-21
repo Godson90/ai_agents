@@ -1,49 +1,78 @@
 import os
-import pathlib
 import warnings
-from Task import *
-from crewai import Crew, Process
-from Helper import slugify
 from pathlib import Path
 from datetime import datetime
+from Helper import *
+from crewai import Crew, Process
 from rich.console import Console
 from rich.markdown import Markdown
-warnings.filterwarnings("ignore")   # warning control
+from Agents import Agents
+from Task import ContentTasks
 
+
+# ---- build agents once ----
+agents = Agents()
+planner = agents.planner()
+writer  = agents.writer()
+editor  = agents.editor()
+
+# ---- build tasks once (from the same factory) ----
+plan_task  = ContentTasks().plan_task
+write_task = ContentTasks().write_task
+edit_task  = ContentTasks().edit_task
+
+# Normalize contexts to the actual instances we will pass to Crew
+# (Some task factories recreate tasks internally; this ensures the right wiring.)
+try:
+    write_task.context = [plan_task]
+except Exception:
+    pass
+try:
+    edit_task.context = [write_task]
+except Exception:
+    pass
+
+# ---- assemble Crew ----
 crew = Crew(
-    agents=[planner, writer_agent, editor_agent],   # all Agents
-    tasks=[plan_task, write_task, edit_task], # all Tasks
+    agents=[planner, writer, editor],
+    tasks=[plan_task, write_task, edit_task],
     process=Process.sequential,
     verbose=False,
 )
 
 if __name__ == "__main__":
-    topic = input("What topic do you wish to write? ")
-    write_choice = input("Write result to file? (y/n): ")
+    # sanity check for API key (avoids confusing network errors later)
+    if not os.getenv("OPENAI_API_KEY"):
+        print("[WARN] OPENAI_API_KEY is not set in the environment.")
 
-    result = crew.kickoff(inputs={"topic": topic})
-    # Ensure we have a string to write/print
+    topic = input("What topic do you wish to write? ")
+    write_choice = input("Write result to file? (y/n): ").strip().lower()
+
+    try:
+        result = crew.kickoff(inputs={"topic": topic})
+    except Exception as e:
+        # surface a concise error and exit
+        print(f"[ERROR] Crew run failed: {e}")
+        raise
+
+    # Ensure printable string
     result_str = result if isinstance(result, str) else str(result)
 
-   # print(result_str)
+    # Pretty terminal preview
     Console().print(Markdown(result_str))
 
-    if write_choice.strip().lower() in {"y", "yes", "1", "true", "t"}:
+    # Optional write-to-file
+    if write_choice in {"y", "yes", "1", "true", "t"}:
         try:
-            # Target directory (Windows)
             target_dir = Path(r"C:\Workspace\AI_Agents\Result")
             target_dir.mkdir(parents=True, exist_ok=True)
 
-            # Build a safe filename: YYYYMMDD_HHMMSS_<topic>.MD
             ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-            fname = f"{ts}_{slugify(topic)}.MD"
+            fname = f"{ts}_{slugify(topic)}.md"  # use .md (lowercase is conventional)
             out_path = target_dir / fname
 
-            # Optional: add a simple header to the markdown
             header = f"# {topic}\n\n*Generated:* {datetime.now().isoformat()}\n\n"
-            with open(out_path, "w", encoding="utf-8") as f:
-                f.write(header)
-                f.write(result_str)
+            out_path.write_text(header + result_str, encoding="utf-8")
 
             print(f"\nSaved to: {out_path}")
         except OSError as e:
