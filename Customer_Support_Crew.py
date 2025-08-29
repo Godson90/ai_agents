@@ -22,7 +22,7 @@ quality_assurance_task = tasks.quality_assurance_task
 crew = Crew(
     agents=[support_rep, quality_assurance],
     tasks=[inquiry_task_rep, quality_assurance_task],
-    verbose=True,
+    verbose=False,
     memory=True,
 )
 

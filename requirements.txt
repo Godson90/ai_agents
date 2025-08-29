@@ -1,0 +1,3 @@
+crewai~=0.175.0
+crewai-tools==0.65.0
+rich~=13.9.4

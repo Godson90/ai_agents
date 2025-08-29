@@ -9,7 +9,7 @@ from rich.markdown import Markdown
 from Agents import Agents
 from Task import ContentTasks
 
-
+warnings.filterwarnings("ignore")
 # ---- build agents once ----
 agents = Agents()
 planner = agents.planner()
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     # Optional write-to-file
     if write_choice in {"y", "yes", "1", "true", "t"}:
         try:
-            target_dir = Path(r"C:\Workspace\AI_Agents\Result")
+            target_dir = Path(r"C:\Workspace\CrewAI\Result")
             target_dir.mkdir(parents=True, exist_ok=True)
 
             ts = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -77,3 +77,4 @@ if __name__ == "__main__":
             print(f"\nSaved to: {out_path}")
         except OSError as e:
             print(f"\n[WARN] Could not write file: {e}")
+
