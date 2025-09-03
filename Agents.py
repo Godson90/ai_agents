@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from typing import Optional
 from crewai import Agent, LLM
+from crewai_tools import SerperDevTool, ScrapeWebsiteTool
 
 
 class Agents:
@@ -20,6 +21,8 @@ class Agents:
             api_key=api_key or os.getenv("OPENAI_API_KEY"),
 
         )
+        self.search_tool = SerperDevTool()
+        self.scrape_website_tool = ScrapeWebsiteTool()
 
     def planner(self) -> Agent:
         return Agent(
@@ -140,4 +143,56 @@ class Agents:
             allow_delegation=False,
             verbose=False,
             llm=self.llm
+        )
+
+    def venue_cordinator_agent(self) -> Agent:
+
+        return Agent(
+            role="Venue Cordinator",
+            goal= "Identify and book an appropriate venue "
+            "based on event requirements",
+            backstory=(
+                "With a keen sense of space and "
+                "understanding of event logistics, "
+                "you excel at finding and securing "
+                "the perfect venue that fits the event's theme, "
+                "size, and budget constraints."
+            ),
+            tools=[self.search_tool, self.scrape_website_tool],
+            verbose=True,
+            llm=self.llm,
+        )
+
+    def logistic_manager_agent(self) -> Agent:
+        return Agent(
+            role="Logistic Manager",
+            goal= (
+                "Manage all logistics for the event "
+                "including catering and equipmen"
+            ),
+            backstory=(
+                "Organized and detail-oriented, "
+                "you ensure that every logistical aspect of the event "
+                "from catering to equipment setup "
+                "is flawlessly executed to create a seamless experience."
+            ),
+            tools=[self.search_tool, self.scrape_website_tool],
+            verbose=True,
+            llm=self.llm,
+        )
+
+    def marketing_communication_agent(self) -> Agent:
+        return Agent(
+            role="Marketing and Communication Agent",
+            goal="Effectively market the event and "
+                "communicate with participants",
+            tools=[self.search_tool, self.scrape_website_tool],
+            verbose=True,
+            backstory=(
+                "Creative and communicative, "
+                "you craft compelling messages and "
+                "engage with potential attendees "
+                "to maximize event exposure and participation."
+            ),
+            llm=self.llm,
         )

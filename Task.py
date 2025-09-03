@@ -5,6 +5,7 @@ from crewai import Task
 from crewai_tools import ScrapeWebsiteTool, DirectoryReadTool, FileReadTool, SerperDevTool
 from Agents import Agents
 from Sentiment_Analysis import SentimentAnalysis
+from Custom_Models import VenueDetails
 import  os
 
 class ContentTasks:
@@ -195,3 +196,53 @@ class CustomerOutreach:
             tools=[self._sentiment_analysis_tool, self._search_tool],
             agent=self._agents.lead_sales_rep_agent(),
         )
+
+class EventPlanner:
+    def __init__(self, agents: Optional[object] = None) -> None:
+        self._agents = Agents()
+
+        self.venue_task = Task(
+            description=(
+                "Find a venue in {event_city} "
+                "that meets criteria for {event_topic}."
+            ),
+            expected_output=(
+                "All the details of a specifically chosen"
+                "venue you found to accommodate the event."
+            ),
+            human_input=True,
+            output_json=VenueDetails,
+            output_file="venue_details.json",
+             # output the venue details as a JSON File
+            agent=self._agents.venue_cordinator_agent(),
+        )
+
+        self.marketing_task = Task(
+            description=(
+                "Promote the {event_topic} "
+                "aiming to engage at least"
+                "{expected_participants} potential attendees."
+            ),
+            expected_output=(
+                "Report on marketing activities "
+                "and attendee engagement formatted as markdown."
+            ),
+            output_file="marketing_report.md",
+            agent=self._agents.marketing_communication_agent(),
+        )
+        self.logistics_task = Task(
+            description=(
+                "Coordinate catering and "
+                "equipment for an event "
+                "with {expected_participants} participants "
+                "on {tentative_date}."
+            ),
+            expected_output=(
+                "Confirmation of all logistics arrangements "
+                "including catering and equipment setup."
+            ),
+            human_input=True,
+            async_execution=True,
+            agent=self._agents.logistic_manager_agent(),
+        )
+
