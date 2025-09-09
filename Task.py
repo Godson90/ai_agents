@@ -1,12 +1,14 @@
 # tasks.py
+import  os
 from __future__ import annotations
 from typing import List, Optional
 from crewai import Task
 from crewai_tools import ScrapeWebsiteTool, DirectoryReadTool, FileReadTool, SerperDevTool
-from Agents import Agents
+from Agents import Agents, JobAgents
 from Sentiment_Analysis import SentimentAnalysis
 from Custom_Models import VenueDetails
-import  os
+from config import task_config
+
 
 class ContentTasks:
     """
@@ -24,44 +26,18 @@ class ContentTasks:
 
         # Build tasks once and wire up contexts in order
         self.plan_task: Task = Task(
-            description=(
-                "1) Prioritize the latest trends, key players, and noteworthy news on {topic}.\n"
-                "2) Identify the target audience and their interests/pain points.\n"
-                "3) Develop a detailed content outline (intro, key points, call to action).\n"
-                "4) Include SEO keywords and relevant data/sources (links if available)."
-            ),
-            expected_output=(
-                "A comprehensive content plan with: outline, audience analysis, "
-                "SEO keywords, and a sources list."
-            ),
+            config=task_config()['plan_task'],
             agent=self._agents.planner(),
         )
 
         self.write_task: Task = Task(
-            description=(
-                "Using the content plan, draft a compelling blog post on {topic}.\n"
-                "- Incorporate SEO keywords naturally.\n"
-                "- Use clear section headings/subtitles.\n"
-                "- Structure: engaging introduction, insightful body, crisp conclusion.\n"
-                "- Proofread for grammar and brand voice alignment."
-            ),
-            expected_output=(
-                "A well-written Markdown blog post, publication-ready. "
-                "Each section should have 2–3 paragraphs."
-            ),
+            config=task_config()['write_task'],
             agent=self._agents.writer(),
             context=[self.plan_task],  # <-- reference the already-built plan_task
         )
 
         self.edit_task: Task = Task(
-            description=(
-                "Edit the draft for clarity, grammar, factual accuracy, and brand voice. "
-                "Tighten phrasing and fix any structural issues."
-            ),
-            expected_output=(
-                "A polished Markdown article, publication-ready; "
-                "each section with 2–3 cohesive paragraphs."
-            ),
+            config=task_config()['edit_task'],
             agent=self._agents.editor(),
             context=[self.write_task],  # <-- reference the already-built write_task
         )
@@ -246,3 +222,75 @@ class EventPlanner:
             agent=self._agents.logistic_manager_agent(),
         )
 
+class JobApplication:
+    def __init__(self, agents: Optional[object] = None) -> None:
+        self._agents = JobAgents()
+
+        self.research_task = Task(
+            description=(
+                "Analyze the job posting URL provided ({job_posting_url}) "
+                "to extract key skills, experiences, and qualifications "
+                "required. Use the tools to gather content and identify "
+                "and categorize the requirements."
+            ),
+            expected_output=(
+                "A structured list of job requirements, including necessary "
+                "skills, qualifications, and experiences."
+            ),
+            agent=self._agents.resume_researcher_agent(),
+            async_execution=True
+        )
+
+        self.profile_task = Task(
+            description=(
+                "Compile a detailed personal and professional profile "
+                "using the GitHub ({github_url}) URLs,linkedin ({linkedin_url}) URLs,and personal write-up "
+                "({personal_writeup}). Utilize tools to extract and "
+                "synthesize information from these sources."
+            ),
+            expected_output=(
+                "A comprehensive profile document that includes skills, "
+                "project experiences, contributions, interests, and "
+                "communication style."
+            ),
+            agent=self._agents.profiler_agent(),
+            async_execution=True
+        )
+
+        self.resume_strategy_task = Task(
+            description=(
+                "Using the profile and job requirements obtained from "
+                "previous tasks, tailor the resume to highlight the most "
+                "relevant areas. Employ tools to adjust and enhance the "
+                "resume content. Make sure this is the best resume even but "
+                "don't make up any information. Update every section, "
+                "inlcuding the initial summary, work experience, skills, "
+                "and education. All to better reflrect the candidates "
+                "abilities and how it matches the job posting."
+            ),
+            expected_output=(
+                "An updated resume that effectively highlights the candidate's "
+                "qualifications and experiences relevant to the job."
+            ),
+            output_file="tailored_resume.md",
+            context=[self.research_task, self.profile_task],
+            agent=self._agents.resume_strategist_agent()
+        )
+
+        self.interview_preparation_task = Task(
+            description=(
+                "Create a set of potential interview questions and talking "
+                "points based on the tailored resume and job requirements. "
+                "Utilize tools to generate relevant questions and discussion "
+                "points. Make sure to use these question and talking points to "
+                "help the candiadte highlight the main points of the resume "
+                "and how it matches the job posting."
+            ),
+            expected_output=(
+                "A document containing key questions and talking points "
+                "that the candidate should prepare for the initial interview."
+            ),
+            output_file="interview_materials.md",
+            context=[self.research_task, self.profile_task, self.resume_strategy_task],
+            agent=self._agents.interview_preparation_agent()
+        )
