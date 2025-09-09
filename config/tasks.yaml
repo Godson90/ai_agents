@@ -1,0 +1,25 @@
+plan_task:
+  description: >
+    1) Prioritize the latest trends, key players, and noteworthy news on {topic}
+    2) Identify the target audience and their interests/pain points
+    3) Develop a detailed content outline (intro, key points, call to action)
+    4) Include SEO keywords and relevant data/sources (links if available)
+  expected_output: >
+    A comprehensive content plan with: outline, audience analysis,SEO keywords, and a sources list
+
+write_task:
+  description: >
+    Using the content plan, draft a compelling blog post on {topic}.
+    - Incorporate SEO keywords naturally.
+    - Use clear section headings/subtitles.
+    - Structure: engaging introduction, insightful body, crisp conclusion.
+    - Proofread for grammar and brand voice alignment.
+  expected_output: >
+    A well-written Markdown blog post, publication-ready. Each section should have 2–3 paragraphs.
+
+edit_task:
+  description: >
+   Edit the draft for clarity, grammar, factual accuracy, and brand voice
+   Tighten phrasing and fix any structural issues
+  expected_output: >
+   A polished Markdown article, publication-ready;each section with 2–3 cohesive paragraphs
