@@ -34,10 +34,10 @@ if __name__ == "__main__":
         'event_description': "A gathering of tech innovators "
                              "and industry leaders "
                              "to explore future technologies.",
-        'event_city': "Columbus OH",
-        'tentative_date': "2025-09-15",
-        'expected_participants': 500,
-        'budget': 20000,
+        'event_city': "Lewis Center OH",
+        'tentative_date': "2025-09-20",
+        'expected_participants': 50,
+        'budget': 5000,
         'venue_type': "Conference Hall"
     }
     result = crew.kickoff(inputs=event_details)

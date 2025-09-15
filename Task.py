@@ -1,6 +1,6 @@
 # tasks.py
 import  os
-from __future__ import annotations
+#from __future__ import annotations
 from typing import List, Optional
 from crewai import Task
 from crewai_tools import ScrapeWebsiteTool, DirectoryReadTool, FileReadTool, SerperDevTool
@@ -105,7 +105,7 @@ class EventPlanner:
             agent=self._agents.marketing_communication_agent(),
         )
         self.logistics_task = Task(
-            config=task_config()['logistics_task'],
+            config=task_config()['logistic_task'],
             human_input=True,
             async_execution=True,
             agent=self._agents.logistic_manager_agent(),
