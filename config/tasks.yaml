@@ -23,3 +23,109 @@ edit_task:
    Tighten phrasing and fix any structural issues
   expected_output: >
    A polished Markdown article, publication-ready;each section with 2–3 cohesive paragraphs
+
+inquiry_task:
+  description: >
+    {customer} just reached out with a super important ask:{inquiry}
+    {person} from {customer} is the one that reached out.
+    Make sure to use everything you know to provide the best support possible.
+    You must strive to provide a complete and accurate response to the customer's inquiry.
+    No Hallucinations.
+  expected_output: >
+    A detailed, informative response to the customer's inquiry that addresses
+    all aspects of their question.The response should include references
+    to everything you used to find the answer,Excluding external data or solutions.
+    Ensure the answer is complete,leaving no questions unanswered, and maintain a helpful and friendly
+    tone throughout
+
+quality_assurance_task:
+  description: >
+    Review the response drafted by the Senior Support Representative for {customer}'s inquiry.
+    Ensure that the answer is comprehensive, accurate, and adheres to the high-quality standards expected for 
+    customer support.Verify that all parts of the customer's inquiry have been addressed thoroughly, 
+    with a helpful and friendly tone.
+    Check for references and sources used to find the information,ensuring the response is well-supported 
+    and leaves no questions unanswered.
+  expected_output: >
+    A final, detailed, summarized, and informative response ready to be sent to the customer.
+    This response should fully address the customer's inquiry, incorporating all relevant feedback and improvements.
+    Don't be too formal, we are a chill and cool company but maintain a professional and friendly tone throughout.
+
+lead_profiling_task:
+    description: >
+      Conduct an in-depth analysis of {lead_name},a company in the {industry} sector 
+      that recently showed interest in our solutions.Utilize all available data sources
+      to compile a detailed profile,focusing on key decision-makers, recent business 
+      developments, and potential needs that align with our offerings.
+      This task is crucial for tailoring our engagement strategy effectively.
+      Don't make assumptions and only use information you absolutely sure about.
+    expected_output: >
+      A comprehensive report on {lead_name},including company background,
+      key personnel, recent milestones, and identified needs.Highlight potential areas where
+      our solutions can provide value,and suggest personalized engagement strategies.
+
+personalized_outreach_task:
+  description: >
+    Using the insights gathered from the lead profiling report on {lead_name},
+    craft a personalized outreach campaign aimed at {key_decision_maker},the {position} of {lead_name}.
+    The campaign should address their recent {milestone} and how our solutions can support their goals. 
+    Your communication must resonate with {lead_name}'s company culture and values,
+    demonstrating a deep understanding of their business and needs.Don't make assumptions and only 
+    use information you absolutely sure about.
+  expected_output: >
+    A series of personalized email drafts tailored to {lead_name},specifically targeting {key_decision_maker}.
+    Each draft should include a compelling narrative that connects our solutions
+    with their recent achievements and future goals.Ensure the tone is engaging, professional,
+    and aligned with {lead_name}'s corporate identity.Finally select the best of the series of email drafts.
+
+venue_task:
+  description: >
+    Find a venue in {event_city}that meets criteria for {event_topic}.
+  expected_output: >
+    All the details of a specifically chosen venue you found to accommodate the event.
+
+marketing_task:
+  description: >
+    Promote the {event_topic} aiming to engage at least {expected_participants} potential attendees.
+  expected_output: >
+    Report on marketing activities and attendee engagement formatted as markdown.
+
+logistic_task:
+  description: >
+    Coordinate catering and equipment for an event with {expected_participants} participants on {tentative_date}.
+  expected_output: >
+    Confirmation of all logistics arrangements including catering and equipment setup.
+    
+research_task:
+  description: >
+    Analyze the job posting URL provided ({job_posting_url}) to extract key skills, experiences, 
+    and qualifications required. Use the tools to gather content and identify and categorize the requirements.
+  expected_output: >
+    A structured list of job requirements, including necessary skills, qualifications, and experiences.
+
+profile_task:
+  description : >
+    Compile a detailed personal and professional profile using the GitHub ({github_url}) URLs,
+    linkedin ({linkedin_url}) URLs,and personal write-up({personal_writeup}). Utilize tools to extract and 
+    synthesize information from these sources.
+  expected_output: >
+    A comprehensive profile document that includes skills,project experiences, contributions, interests, and 
+    communication style.
+
+resume_strategy_task:
+  description: >
+    Using the profile and job requirements obtained from previous tasks, tailor the resume to highlight the most 
+    relevant areas. Employ tools to adjust and enhance the resume content. Make sure this is the best resume even but 
+    don't make up any information. Update every section,including the initial summary, work experience, skills, 
+    and education. All to better reflect the candidates abilities and how it matches the job posting.
+  expected_output: >
+    An updated resume that effectively highlights the candidate's qualifications and experiences relevant to the job.
+
+interview_preparation_task :
+  description: >
+    Create a set of potential interview questions and talking points based on the tailored resume and job 
+    requirements.Utilize tools to generate relevant questions and discussion points. 
+    Make sure to use these question and talking points to help the candidate highlight the main points of the resume 
+    and how it matches the job posting.
+  expected_output: >
+    A document containing key questions and talking points that the candidate should prepare for the initial interview.

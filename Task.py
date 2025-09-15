@@ -54,27 +54,7 @@ class SupportTask:
         self._scrape_website_tool = ScrapeWebsiteTool(website_url="https://www.defenstack.com")
 
         self.inquiry_task: Task =  Task(
-            description=(
-                    "{customer} just reached out with a super important ask:\n"
-                    "{inquiry}\n\n"
-                    "{person} from {customer} is the one that reached out. "
-                    "Make sure to use everything you know "
-                    "to provide the best support possible."
-                    "You must strive to provide a complete "
-                    "and accurate response to the customer's inquiry."
-                    "No Hallucinations."
-                ),
-            expected_output=(
-                    "A detailed, informative response to the "           
-                    "customer's inquiry that addresses "
-                    "all aspects of their question.\n"
-                    "The response should include references "
-                    "to everything you used to find the answer, "
-                    "Excluding external data or solutions. "
-                    "Ensure the answer is complete, "
-                    "leaving no questions unanswered, and maintain a helpful and friendly "
-                    "tone throughout."
-                ),
+            config=task_config()['inquiry_task'],
             tools=[self._scrape_website_tool],
             agent=self._agents.support_agent(),
             )
